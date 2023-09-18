@@ -22,7 +22,6 @@ const getHomeCategory = async () => {
 const hotList = ref<HotItem[]>([])
 const getHomeHot = async () => {
   const res = await getHomeHotAPI()
-  console.log(res.result)
   hotList.value = res.result
 }
 onLoad(() => {
