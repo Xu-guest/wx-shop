@@ -4,10 +4,10 @@ import CustomNavbar from './components/CustomNavbar.vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
-import type { XtxGuessInstance } from '@/types/component'
 import CategoryPanel from './components/CategoryPanel.vue'
 import HotPanel from './components/HotPanel.vue'
 import pageSkeleton from './components/PageSkeleton.vue'
+import { useGuessRef } from '@/composables'
 // 轮播图
 const bannerList = ref<BannerItem[]>([])
 const getHomeBanner = async () => {
@@ -26,11 +26,8 @@ const getHomeHot = async () => {
   const res = await getHomeHotAPI()
   hotList.value = res.result
 }
-const guessRef = ref<XtxGuessInstance>()
-//滚动触底
-const onScrolltolower = () => {
-  guessRef.value?.getMore()
-}
+//猜你喜欢滚动触底获取数据
+const { onScrolltolower, guessRef } = useGuessRef()
 //下拉刷新
 const isTriggered = ref(false)
 const onRefresherrefresh = async () => {

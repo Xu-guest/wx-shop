@@ -5,6 +5,7 @@ import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 import AddressPanel from './components/AddressPanel.vue'
 import ServicePanel from './components/ServicePanel.vue'
+import PageSkeleton from './components/PageSkeleton.vue'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const query = defineProps<{
@@ -41,125 +42,129 @@ const openPopup = (name: typeof popupName.value) => {
   // 打开弹出层
   popup.value?.open()
 }
-
-onLoad(() => {
-  getGoodsByIdData()
+const isFinished = ref(false)
+onLoad(async () => {
+  await getGoodsByIdData()
+  isFinished.value = true
 })
 </script>
 
 <template>
-  <scroll-view scroll-y class="viewport">
-    <!-- 基本信息 -->
-    <view class="goods">
-      <!-- 商品主图 -->
-      <view class="preview">
-        <swiper circular @change="onChange">
-          <swiper-item v-for="item in Goods?.mainPictures" :key="item">
-            <image @tap="onTapImage(item)" mode="aspectFill" :src="item" />
-          </swiper-item>
-        </swiper>
-        <view class="indicator">
-          <text class="current">{{ currIndex + 1 }}</text>
-          <text class="split">/</text>
-          <text class="total">{{ Goods?.mainPictures.length }}</text>
-        </view>
-      </view>
-
-      <!-- 商品简介 -->
-      <view class="meta">
-        <view class="price">
-          <text class="symbol">¥</text>
-          <text class="number">{{ Goods?.price }}</text>
-        </view>
-        <view class="name ellipsis">{{ Goods?.name }}</view>
-        <view class="desc">{{ Goods?.desc }}</view>
-      </view>
-
-      <!-- 操作面板 -->
-      <view class="action">
-        <view class="item arrow">
-          <text class="label">选择</text>
-          <text class="text ellipsis"> 请选择商品规格 </text>
-        </view>
-        <view @tap="openPopup('address')" class="item arrow">
-          <text class="label">送至</text>
-          <text class="text ellipsis"> 请选择收获地址 </text>
-        </view>
-        <view @tap="openPopup('service')" class="item arrow">
-          <text class="label">服务</text>
-          <text class="text ellipsis"> 无忧退 快速退款 免费包邮 </text>
-        </view>
-      </view>
-    </view>
-    <!-- uni-ui 弹出层 -->
-    <uni-popup ref="popup" type="bottom" background-color="#fff">
-      <AddressPanel v-if="popupName === 'address'" @close="popup?.close()" />
-      <ServicePanel v-if="popupName === 'service'" @close="popup?.close()" />
-    </uni-popup>
-
-    <!-- 商品详情 -->
-    <view class="detail panel">
-      <view class="title">
-        <text>详情</text>
-      </view>
-      <view class="content">
-        <view class="properties">
-          <!-- 属性详情 -->
-          <view class="item" v-for="item in Goods?.details.properties" :key="item.name">
-            <text class="label">{{ item.name }}</text>
-            <text class="value">{{ item.value }}</text>
+  <template v-if="isFinished">
+    <scroll-view scroll-y class="viewport">
+      <!-- 基本信息 -->
+      <view class="goods">
+        <!-- 商品主图 -->
+        <view class="preview">
+          <swiper circular @change="onChange">
+            <swiper-item v-for="item in Goods?.mainPictures" :key="item">
+              <image @tap="onTapImage(item)" mode="aspectFill" :src="item" />
+            </swiper-item>
+          </swiper>
+          <view class="indicator">
+            <text class="current">{{ currIndex + 1 }}</text>
+            <text class="split">/</text>
+            <text class="total">{{ Goods?.mainPictures.length }}</text>
           </view>
         </view>
-        <!-- 图片详情 -->
-        <image
-          v-for="item in Goods?.details.pictures"
-          :key="item"
-          mode="widthFix"
-          :src="item"
-        ></image>
-      </view>
-    </view>
 
-    <!-- 同类推荐 -->
-    <view class="similar panel">
-      <view class="title">
-        <text>同类推荐</text>
-      </view>
-      <view class="content">
-        <navigator
-          v-for="item in Goods?.similarProducts"
-          :key="item.id"
-          class="goods"
-          hover-class="none"
-          :url="`/pages/goods/goods?id=${item.id}`"
-        >
-          <image class="image" mode="aspectFill" :src="item.picture"></image>
-          <view class="name ellipsis">{{ item.name }}</view>
+        <!-- 商品简介 -->
+        <view class="meta">
           <view class="price">
             <text class="symbol">¥</text>
-            <text class="number">{{ item.price }}</text>
+            <text class="number">{{ Goods?.price }}</text>
           </view>
+          <view class="name ellipsis">{{ Goods?.name }}</view>
+          <view class="desc">{{ Goods?.desc }}</view>
+        </view>
+
+        <!-- 操作面板 -->
+        <view class="action">
+          <view class="item arrow">
+            <text class="label">选择</text>
+            <text class="text ellipsis"> 请选择商品规格 </text>
+          </view>
+          <view @tap="openPopup('address')" class="item arrow">
+            <text class="label">送至</text>
+            <text class="text ellipsis"> 请选择收获地址 </text>
+          </view>
+          <view @tap="openPopup('service')" class="item arrow">
+            <text class="label">服务</text>
+            <text class="text ellipsis"> 无忧退 快速退款 免费包邮 </text>
+          </view>
+        </view>
+      </view>
+      <!-- uni-ui 弹出层 -->
+      <uni-popup ref="popup" type="bottom" background-color="#fff">
+        <AddressPanel v-if="popupName === 'address'" @close="popup?.close()" />
+        <ServicePanel v-if="popupName === 'service'" @close="popup?.close()" />
+      </uni-popup>
+
+      <!-- 商品详情 -->
+      <view class="detail panel">
+        <view class="title">
+          <text>详情</text>
+        </view>
+        <view class="content">
+          <view class="properties">
+            <!-- 属性详情 -->
+            <view class="item" v-for="item in Goods?.details.properties" :key="item.name">
+              <text class="label">{{ item.name }}</text>
+              <text class="value">{{ item.value }}</text>
+            </view>
+          </view>
+          <!-- 图片详情 -->
+          <image
+            v-for="item in Goods?.details.pictures"
+            :key="item"
+            mode="widthFix"
+            :src="item"
+          ></image>
+        </view>
+      </view>
+
+      <!-- 同类推荐 -->
+      <view class="similar panel">
+        <view class="title">
+          <text>同类推荐</text>
+        </view>
+        <view class="content">
+          <navigator
+            v-for="item in Goods?.similarProducts"
+            :key="item.id"
+            class="goods"
+            hover-class="none"
+            :url="`/pages/goods/goods?id=${item.id}`"
+          >
+            <image class="image" mode="aspectFill" :src="item.picture"></image>
+            <view class="name ellipsis">{{ item.name }}</view>
+            <view class="price">
+              <text class="symbol">¥</text>
+              <text class="number">{{ item.price }}</text>
+            </view>
+          </navigator>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 用户操作 -->
+    <view class="toolbar" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
+      <view class="icons">
+        <button class="icons-button"><text class="icon-heart"></text>收藏</button>
+        <button class="icons-button" open-type="contact">
+          <text class="icon-handset"></text>客服
+        </button>
+        <navigator class="icons-button" url="/pages/cart/cart" open-type="switchTab">
+          <text class="icon-cart"></text>购物车
         </navigator>
       </view>
+      <view class="buttons">
+        <view class="addcart"> 加入购物车 </view>
+        <view class="buynow"> 立即购买 </view>
+      </view>
     </view>
-  </scroll-view>
-
-  <!-- 用户操作 -->
-  <view class="toolbar" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
-    <view class="icons">
-      <button class="icons-button"><text class="icon-heart"></text>收藏</button>
-      <button class="icons-button" open-type="contact">
-        <text class="icon-handset"></text>客服
-      </button>
-      <navigator class="icons-button" url="/pages/cart/cart" open-type="switchTab">
-        <text class="icon-cart"></text>购物车
-      </navigator>
-    </view>
-    <view class="buttons">
-      <view class="addcart"> 加入购物车 </view>
-      <view class="buynow"> 立即购买 </view>
-    </view>
-  </view>
+  </template>
+  <PageSkeleton v-else />
 </template>
 
 <style lang="scss">
