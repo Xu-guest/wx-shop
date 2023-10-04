@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* eslint-disable */
 import {
   getMemberAddressByIdAPI,
   postMemberAddressAPI,
