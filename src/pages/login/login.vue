@@ -28,7 +28,8 @@ const loginSuccess = (profile: LoginResult) => {
   uni.showToast({ icon: 'success', title: '登录成功' })
   setTimeout(() => {
     //开发环境跳转
-    uni.switchTab({ url: '/pages/my/my' })
+    // uni.switchTab({ url: '/pages/my/my' })
+    uni.navigateBack()
   }, 500)
 }
 </script>

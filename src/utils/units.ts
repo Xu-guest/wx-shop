@@ -15,7 +15,6 @@ export const throttle = (fun: Function, duration = 1000) => {
     if (now - lastTime >= duration) {
       // 超过了则调用被节流的方法实现
       fun()
-      console.log('函数执行了')
       // 更新最后执行函数时的时间戳
       lastTime = now
     }

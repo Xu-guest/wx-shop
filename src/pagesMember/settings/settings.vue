@@ -8,7 +8,7 @@ const onLogout = () => {
     content: '是否退出登录',
     success: (success) => {
       if (success.confirm === true) {
-        memberStore.clearProfile
+        memberStore.clearProfile()
         uni.navigateBack()
       }
     },
