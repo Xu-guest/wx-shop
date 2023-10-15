@@ -11,7 +11,7 @@ import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import type { InputNumberBoxEvent } from '@/components/vk-data-input-number-box/vk-data-input-number-box'
 import { useGuessRef } from '@/composables'
-const query = defineProps<{ cart: string }>()
+const query = defineProps<{ cart?: string }>()
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 //获取会员store
@@ -79,6 +79,7 @@ const ongotoPayment = () => {
     })
   }
   //跳转结算页
+  uni.navigateTo({ url: '/pagesOrder/create/create' })
 }
 //猜你喜欢滚动触底获取数据
 const { onScrolltolower, guessRef } = useGuessRef()
