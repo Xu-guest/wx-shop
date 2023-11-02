@@ -41,10 +41,23 @@ const getMemberOrder = async () => {
     finish.value = true
   }
 }
-//  async () => {
-//   const res = await getMemberOrderAPI(ListParams)
-//   OrderList.value = res.result.items
-// }
+// 重置数据
+const resetData = () => {
+  ListParams.page = 1
+  OrderList.value = []
+  finish.value = false
+}
+// 下拉刷新状态
+const isTriggered = ref(false)
+// 自定义下拉刷新被触发
+const onRefresherrefresh = async () => {
+  // 开启动画
+  isTriggered.value = true
+  // 重置猜你喜欢组件数据
+  resetData() // 加载数据
+  await getMemberOrder() // 关闭动画
+  isTriggered.value = false
+}
 onMounted(() => {
   getMemberOrder()
 })
@@ -69,7 +82,14 @@ const onOrderPay = async (id: string) => {
 </script>
 <template>
   <!-- 订单列表 -->
-  <scroll-view scroll-y class="orders" @scrolltolower="onScrolltolower">
+  <scroll-view
+    refresher-enabled
+    @refresherrefresh="onRefresherrefresh"
+    :refresher-triggered="isTriggered"
+    scroll-y
+    class="orders"
+    @scrolltolower="onScrolltolower"
+  >
     <view class="card" v-for="order in OrderList" :key="order.id">
       <!-- 订单信息 -->
       <view class="status">
