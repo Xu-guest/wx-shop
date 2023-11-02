@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { getMemberOrderPreAPI, getMemberOrderPreNowAPI } from '@/services/order'
+import {
+  getMemberOrderPreAPI,
+  getMemberOrderPreNowAPI,
+  getMemberOrderRepurchaseByIdAPI,
+  postMemberOrderAPI,
+} from '@/services/order'
 import type { OrderPreResult } from '@/types/order'
 import { computed, ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
@@ -28,16 +33,23 @@ const onChangeDelivery: UniHelper.SelectorPickerOnChange = (ev) => {
 const query = defineProps<{
   skuId?: string
   count?: string
+  orderId?: string
 }>()
 const orderPre = ref<OrderPreResult>()
 const getMemberOrderPre = async () => {
-  if (query.count) {
+  if (query.count && query.skuId) {
+    //立即购买
     const res = await getMemberOrderPreNowAPI({
       skuId: query.skuId!,
       count: query.count,
     })
     orderPre.value = res.result
+  } else if (query.skuId) {
+    //再次购买
+    const res = await getMemberOrderRepurchaseByIdAPI(query.skuId)
+    orderPre.value = res.result
   } else {
+    //未付款订单
     const res = await getMemberOrderPreAPI()
     orderPre.value = res.result
   }
@@ -57,6 +69,23 @@ const selectedAddress = computed(() => {
     addressList.value?.find((v) => v.isDefault)
   )
 })
+const onOrderSubmit = async () => {
+  if (!selectedAddress.value?.id) {
+    return uni.showToast({
+      title: '请选择收货地址',
+      icon: 'none',
+    })
+  }
+  const res = await postMemberOrderAPI({
+    addressId: selectedAddress.value?.id,
+    buyerMessage: buyerMessage.value,
+    deliveryTimeType: activeDelivery.value.type,
+    goods: orderPre.value!.goods.map((v) => ({ count: v.count, skuId: v.skuId })),
+    payChannel: 2,
+    payType: 1,
+  })
+  uni.redirectTo({ url: `/pagesOrder/detail/detail?id=${res.result.id}` })
+}
 
 onLoad(() => {
   getMemberAddress()
@@ -68,7 +97,7 @@ onLoad(() => {
   <scroll-view scroll-y class="viewport">
     <!-- 收货地址 -->
     <navigator
-      v-if="selectedAddress"
+      v-if="selectedAddress?.id"
       class="shipment"
       hover-class="none"
       url="/pagesMember/address/address?from=order"
@@ -150,7 +179,9 @@ onLoad(() => {
     <view class="total-pay symbol">
       <text class="number">{{ orderPre?.summary.totalPayPrice.toFixed(2) }}</text>
     </view>
-    <view class="button" :class="{ disabled: true }"> 提交订单 </view>
+    <view class="button" :class="{ disabled: !selectedAddress?.id }" @tap="onOrderSubmit">
+      提交订单
+    </view>
   </view>
 </template>
 

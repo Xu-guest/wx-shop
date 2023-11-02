@@ -126,10 +126,6 @@ const selectedAddress = computed(() => {
 
 const isFinished = ref(false)
 onLoad(async () => {
-  console.log(
-    selectedAddress.value,
-    addressList.value?.find((v) => v.isDefault),
-  )
   getMemberAddress()
   await getGoodsByIdData()
   isFinished.value = true
