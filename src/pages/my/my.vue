@@ -76,7 +76,7 @@ const { onScrolltolower, guessRef } = useGuessRef()
         >
           {{ item.text }}
         </navigator>
-        <!-- #ifdef AMP-WEIXIN -->
+        <!-- #ifdef MP-WEIXIN -->
         <!-- 客服 -->
         <button class="contact icon-handset" open-type="contact">售后</button>
         <!-- #endif -->
