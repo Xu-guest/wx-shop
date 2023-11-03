@@ -4,7 +4,7 @@ import {
   getMemberOrderPreNowAPI,
   getMemberOrderRepurchaseByIdAPI,
   postMemberOrderAPI,
-} from '@/services/order'
+} from '@/pagesOrder/services/order'
 import type { OrderPreResult } from '@/types/order'
 import { computed, ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
@@ -406,3 +406,4 @@ page {
   height: 100rpx;
 }
 </style>
+@/pagesOrder/services/order

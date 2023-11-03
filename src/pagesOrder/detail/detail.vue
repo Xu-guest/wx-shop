@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { useGuessRef } from '@/composables/index'
-import { OrderState, orderStateList } from '@/services/constants'
+import { OrderState, orderStateList } from '@/pagesOrder/services/constants'
 import { ref } from 'vue'
 import { onReady, onLoad } from '@dcloudio/uni-app'
-import { getMemberOrderByIdAPI } from '@/services/order'
 import type { OrderResult } from '@/types/order'
-import { getPayMockAPI, getPayWxPayMiniPayAPI } from '@/services/pay'
+import { getPayMockAPI, getPayWxPayMiniPayAPI } from '@/pagesOrder/services/pay'
 import {
   getMemberOrderConsignmentByIdAPI,
   putMemberOrderReceiptByIdAPI,
   getMemberOrderCancelByIdAPI,
+  getMemberOrderByIdAPI,
   getMemberOrderLogisticsByIdAPI,
   deleteMemberOrderAPI,
-} from '@/services/order'
+} from '@/pagesOrder/services/order'
 import type { LogisticItem } from '@/types/order'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -100,9 +100,11 @@ const onOrderPay = async () => {
     // 开发环境：模拟支付，修改订单状态为已支付
     await getPayMockAPI({ orderId: query.id })
   } else {
+    // #ifdef MP-WEIXIN
     // 生产环境：获取支付参数 + 发起微信支付
     const res = await getPayWxPayMiniPayAPI({ orderId: query.id })
     await wx.requestPayment(res.result)
+    // #endif
   }
   // 关闭当前页，再跳转支付结果页
   uni.redirectTo({ url: `/pagesOrder/payment/payment?id=${query.id}` })
@@ -817,4 +819,5 @@ page {
   }
 }
 </style>
-@/services/constants
+@/services/constants @/pagesOrder/services/constants
+@/pagesOrder/services/order@/pagesOrder/services/order @/pagesOrder/services/pay

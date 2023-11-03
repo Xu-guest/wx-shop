@@ -78,7 +78,9 @@
           class="icons-button sk-transparent sk-button sk-pseudo sk-pseudo-circle"
           open-type="contact"
         >
+          <!-- #ifdef MP-WEIXIN -->
           <text class="icon-handset sk-pseudo sk-pseudo-circle"></text>客服
+          <!-- #endif -->
         </button>
         <navigator class="icons-button sk-transparent" open-type="switchTab">
           <text class="icon-cart sk-pseudo sk-pseudo-circle"></text>购物车

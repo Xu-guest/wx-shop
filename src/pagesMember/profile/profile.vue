@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useMemberStore } from '@/stores'
-import { getMemberProfileAPI, putMemberProfileAPI } from '@/services/profile'
+import { getMemberProfileAPI, putMemberProfileAPI } from '@/pagesMember/services/profile'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 import type { ProfileDetail, Gender } from '@/types/login'
@@ -288,3 +288,4 @@ page {
   }
 }
 </style>
+@/pagesMember/services/profile

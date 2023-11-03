@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { OrderState } from '@/services/constants'
-import { orderStateList } from '@/services/constants'
-import { getMemberOrderAPI } from '@/services/order'
-import { getPayMockAPI, getPayWxPayMiniPayAPI } from '@/services/pay'
+import { OrderState, orderStateList } from '@/pagesOrder/services/constants'
+import { getMemberOrderAPI } from '@/pagesOrder/services/order'
+import { getPayMockAPI, getPayWxPayMiniPayAPI } from '@/pagesOrder/services/pay'
 import type { OrderItem, OrderListParams } from '@/types/order'
 import { throttle } from '@/utils/units'
 import { onMounted, ref } from 'vue'
@@ -67,9 +66,11 @@ const onOrderPay = async (id: string) => {
     // 开发环境：模拟支付，修改订单状态为已支付
     await getPayMockAPI({ orderId: id })
   } else {
+    // #ifdef MP-WEIXIN
     // 生产环境：获取支付参数 + 发起微信支付
     const res = await getPayWxPayMiniPayAPI({ orderId: id })
     await wx.requestPayment(res.result)
+    // #endif
   }
   // 提示支付成功，更改状态
   uni.showToast({
@@ -311,3 +312,5 @@ const onOrderPay = async (id: string) => {
   }
 }
 </style>
+@/pagesOrder/services/constants@/pagesOrder/services/constants @/pagesOrder/services/order
+@/pagesOrder/services/pay
